@@ -27,6 +27,7 @@ _running_pace_session_table_name = os.environ["RUNNING_PACE_SESSION_TABLE_NAME"]
 _s3 = boto3.resource("s3")
 _dynamodb = boto3.client("dynamodb")
 
+# Tamsin - testing continuous deployment on lambda function update
 
 @logger.inject_lambda_context(log_event=True)
 def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
