@@ -33,7 +33,7 @@ _dynamodb = boto3.client("dynamodb")
 def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
     try:
         file_name = event["file_name"]
-        logger.info({"action": "Getting file from S3", "file_name": file_name})
+        logger.info({"action": "Getting file from S3.", "file_name": file_name})
         response = _get_object_from_s3(file_name)
         logger.info({"action": "Fetched object from S3", "key": file_name})
         object_str = _decode_file_contents(response)
