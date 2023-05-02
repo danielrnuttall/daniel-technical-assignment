@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Daniel Technical Assignment CSV Pace Calculator
+
+Parameters:
+  ClientFitnessDataBucketName:
+    Type: String
+    Description: Bucket name for client-fitness-data-bucket
+    Default: us-east-1-client-fitness-data
+  BaseStackName:
+    Type: String
+    Description: CloudFormation stack name
+    Default: daniel
+  RunningPaceSessionTableName:
+    Type: String
+    Description: Table name for storing running paces
+    Default: running-pace-session-table
+  CsvPaceCalculatorStateMachineName:
+    Type: String
+    Description: Name for CsvPaceCalculatorStateMachine
+    Default: state-machine
+
+Resources:
+  RunningPaceSessionTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub:
+          - $(__StackName__)-${__TableName__}
+          - __StackName__: !Ref AWS::StackName
+            __TableName: !Ref RunningPaceSessionTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  CsvPaceCalculatorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/lambdas/csv_pace_calculator/
+      Handler: function.function.lambda_handler
+      Runtime: python3.8
+      Timeout: 120
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref ClientFitnessDataBucketName
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RunningPaceSessionTable
+      Environment:
+        Variables:
+          LOG_LEVEL: INFO
+          POWERTOOLS_SERVICE_NAME: daniel-technical-assignment
+          S3_BUCKET_NAME: !Ref ClientFitnessDataBucketName
+          RUNNING_PACE_SESSION_TABLE_NAME: !Ref RunningSessionTable
+  
+  CsvPaceCalculatorStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Name:
+        Fn::Sub:
+          - $(__StackName__)-${__StateMachineName__}
+          - __StackName__: !Ref AWS::StackName
+            __StateMachineName: !Ref CsvPaceCalculatorStateMachineName
+      Definition:
+        StartAt: CsvPaceCalculatorFunction
+        States:
+          CsvPaceCalculatorFunction:
+            Next: StopProcessing
+            Type: Task
+            Resource: !GetAtt CsvPaceCalculatorFunction.Arn
+          StopProcessing:
+            Type: Pass
+            End: True
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CsvPaceCalculatorFunction
+    
