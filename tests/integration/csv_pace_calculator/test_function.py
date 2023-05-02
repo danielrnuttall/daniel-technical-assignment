@@ -48,7 +48,7 @@ def mock_aws(test_valid_file_data, dynamodb_stub: Stubber, s3_stub: Stubber):
     response = {"Body": raw_stream}
     expected_params = {
         "Bucket": "foo_bucket_name",
-        "Key": "garmin_activity_test_file.csv",
+        "Key": "garmin/garmin_activity_test_file.csv",
     }
     s3_stub.add_response("get_object", response, expected_params)
     put_item_response = {"ResponseMetadata": {"HTTPStatusCode": 200}}

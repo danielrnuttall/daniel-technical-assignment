@@ -64,8 +64,9 @@ def _decode_file_contents(object_data):
 
 
 def _get_object_from_s3(key: str):
-    logger.info({"action": "Fetching object from S3.", "key": key})
-    s3_object = _s3.Object(bucket_name=_s3_bucket_name, key=key)
+    file_path = "garmin/" + key
+    logger.info({"action": "Fetching object from S3.", "key": file_path})
+    s3_object = _s3.Object(bucket_name=_s3_bucket_name, key=file_path)
     return s3_object.get()
 
 
