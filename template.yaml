@@ -14,7 +14,7 @@ Parameters:
   RunningPaceSessionTableName:
     Type: String
     Description: Table name for storing running paces
-    Default: running-pace-session-table
+    Default: pace-table
   CsvPaceCalculatorStateMachineName:
     Type: String
     Description: Name for CsvPaceCalculatorStateMachine
