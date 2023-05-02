@@ -2,7 +2,7 @@ import csv
 import os
 import uuid
 from typing import Any, Dict, List
-
+import json
 import boto3
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.parser import ValidationError
@@ -44,8 +44,8 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
         for row in garmin_data:
             if _check_if_row_has_necessary_columns(row):
                 pace = _calculate_pace(row)
-                logger.info({"action": "Uploading calculated pace to DynamoDB"})
                 dynamodb_item = _create_dynamodb_item(row, pace)
+                logger.info({"action": "Uploading calculated pace to DynamoDB", "item": str(dynamodb_item)})
                 _dynamodb.put_item(
                     TableName=_running_pace_session_table_name, Item=dynamodb_item
                 )
@@ -58,17 +58,14 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
         logger.exception(e)
         raise
 
-
-def _decode_file_contents(object_data):
-    return object_data["Body"].read().decode()
-
-
 def _get_object_from_s3(key: str):
     file_path = "garmin/" + key
     logger.info({"action": "Fetching object from S3.", "key": file_path})
     s3_object = _s3.Object(bucket_name=_s3_bucket_name, key=file_path)
     return s3_object.get()
 
+def _decode_file_contents(object_data):
+    return object_data["Body"].read().decode()
 
 def _add_rows_to_list(file_data: str) -> list:
     logger.info({"action": "Now extracting rows from CSV file to process"})
@@ -77,14 +74,6 @@ def _add_rows_to_list(file_data: str) -> list:
     for row in reader:
         row_list.append(row)
     return row_list
-
-
-def _calculate_pace(row: Row) -> float:
-    garmin_total_timer_time = float(row.garmin_total_timer_time.replace(",", "."))
-    garmin_total_distance = float(row.garmin_total_distance.replace(",", "."))
-    if garmin_total_distance == 0:
-        return 0
-    return round(garmin_total_timer_time / garmin_total_distance, 5)
 
 
 def _check_if_row_has_necessary_columns(row: Row) -> bool:
@@ -97,6 +86,13 @@ def _check_if_row_has_necessary_columns(row: Row) -> bool:
         else True
     )
 
+
+def _calculate_pace(row: Row) -> float:
+    garmin_total_timer_time = float(row.garmin_total_timer_time.replace(",", "."))
+    garmin_total_distance = float(row.garmin_total_distance.replace(",", "."))
+    if garmin_total_distance == 0:
+        return 0
+    return round(garmin_total_timer_time / garmin_total_distance, 5)
 
 def _create_dynamodb_item(row: Row, running_pace: float) -> dict:
     garmin_timestamp = row.garmin_timestamp
