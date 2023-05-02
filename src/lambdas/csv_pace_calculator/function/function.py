@@ -35,7 +35,7 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
         file_name = event["file_name"]
         logger.info({"action": "Getting file from S3.", "file_name": file_name})
         response = _get_object_from_s3(file_name)
-        logger.info({"action": "Fetched object from S3", "key": file_name})
+        logger.info({"action": "Fetched object from S3"})
         object_str = _decode_file_contents(response)
 
         row_list = _add_rows_to_list(object_str)
