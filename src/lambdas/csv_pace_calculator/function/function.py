@@ -82,6 +82,8 @@ def _add_rows_to_list(file_data: str) -> list:
 def _calculate_pace(row: Row) -> float:
     garmin_total_timer_time = float(row.garmin_total_timer_time.replace(",", "."))
     garmin_total_distance = float(row.garmin_total_distance.replace(",", "."))
+    if garmin_total_distance == 0:
+        return 0
     return round(garmin_total_timer_time / garmin_total_distance, 5)
 
 
