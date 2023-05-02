@@ -63,7 +63,7 @@ Resources:
         Fn::Sub:
           - $(__StackName__)-${__StateMachineName__}
           - __StackName__: !Ref AWS::StackName
-            __StateMachineName: !Ref CsvPaceCalculatorStateMachineName
+            __StateMachineName__: !Ref CsvPaceCalculatorStateMachineName
       Definition:
         StartAt: CsvPaceCalculatorFunction
         States:
