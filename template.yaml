@@ -28,7 +28,7 @@ Resources:
         Fn::Sub:
           - $(__StackName__)-${__TableName__}
           - __StackName__: !Ref AWS::StackName
-            __TableName: !Ref RunningPaceSessionTableName
+            __TableName__: !Ref RunningPaceSessionTableName
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: id
