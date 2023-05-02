@@ -13,7 +13,7 @@ phases:
       - pip install --upgrade pip
       - pip3 install -r requirements.txt
       - python3 -m pytest tests/ --junitxml=pytest_reports/pytest_report.xml
-      - export BUCKET=danielArtifactsBucket
+      - export BUCKET=daniel-build-artifact-store
       - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file outputtemplate.yaml
 
 artifacts:
