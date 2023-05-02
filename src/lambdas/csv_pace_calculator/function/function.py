@@ -2,7 +2,6 @@ import csv
 import os
 import uuid
 from typing import Any, Dict, List
-import json
 import boto3
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.parser import ValidationError
