@@ -54,7 +54,7 @@ Resources:
           LOG_LEVEL: INFO
           POWERTOOLS_SERVICE_NAME: daniel-technical-assignment
           S3_BUCKET_NAME: !Ref ClientFitnessDataBucketName
-          RUNNING_PACE_SESSION_TABLE_NAME: !Ref RunningSessionTable
+          RUNNING_PACE_SESSION_TABLE_NAME: !Ref RunningPaceSessionTable
   
   CsvPaceCalculatorStateMachine:
     Type: AWS::Serverless::StateMachine
